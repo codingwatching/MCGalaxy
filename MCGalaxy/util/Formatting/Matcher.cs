@@ -83,10 +83,10 @@ namespace MCGalaxy
         public static T Find<T>(Player p, string name, out int matches, IEnumerable<T> items,
                                 Predicate<T> filter, StringFormatter<T> nameGetter, 
                                 StringFormatter<T> itemFormatter, string group, int limit = 5) {
-            List<T> results = GetMatches(name, items, filter, nameGetter, limit);
-            matches = results.Count;
-            
+            List<T> results = GetMatches(name, items, filter, nameGetter, limit);            
             PrintMatches(p, name, results, itemFormatter, group, limit);
+            
+            matches = results.Count;
             return matches == 1 ? results[0] : default(T);
         }
         

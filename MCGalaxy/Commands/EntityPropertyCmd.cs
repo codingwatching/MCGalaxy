@@ -77,24 +77,24 @@ namespace MCGalaxy.Commands {
                 value = message;
             }
 
+            // TODO refactor
             string firstWord = value.SplitSpaces(2)[0];
-
-            if (value.Length > 1) {
-                int matches;
-                Player maybe = firstWord.Length < 3 ? null : PlayerInfo.FindMatches(p, firstWord, out matches, false, false);
-                if (maybe != null) {
-                    string tipModel = args.Length > 1 ? args[1] : "";
-                    string action = tipModel == "" ? "remove" : "change";
-                    if (maybe == p) {
-                        p.Message("&WTIP:");
-                        p.Message("&H  To "+action+" your own {0}, use /{1} {2}", dataType, name.ToLower(), tipModel);
-                    } else {
-                        if (HasExtraPerm(p, p.Rank, 1)) {
-                            p.Message("&WTIP:");
-                            p.Message("&H  To "+action+" &Wother&H player's {0}, use /O{1} [player] {2}", dataType, name, tipModel);
-                        }
-                    }
-                }
+            if (value.Length <= 1)    return true; // TODO redundant with below ?
+            if (firstWord.Length < 3) return true;
+            
+            var matches = PlayerInfo.GetMatches(p, firstWord);
+            if (matches.Count != 1) return true;
+            Player maybe = matches[0];
+            
+            string tipModel = args.Length > 1 ? args[1] : "";
+            string action = tipModel == "" ? "remove" : "change";
+            
+            if (maybe == p) {
+                p.Message("&WTIP:");
+                p.Message("&H  To "+action+" your own {0}, use /{1} {2}", dataType, name.ToLower(), tipModel);
+            } else if (HasExtraPerm(p, p.Rank, 1)) {
+                p.Message("&WTIP:");
+                p.Message("&H  To "+action+" &Wother&H player's {0}, use /O{1} [player] {2}", dataType, name, tipModel);
             }
             return true;
         }

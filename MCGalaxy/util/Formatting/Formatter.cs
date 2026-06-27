@@ -79,30 +79,21 @@ namespace MCGalaxy
             const string alphabet = Player.USERNAME_ALPHABET + "+"; // compatibility with ClassiCubeAccountPlus
             return IsValidName(p, name, type, alphabet);
         }
-        /// <summary>
-        /// Binary compatibility with plugins before feedback was introduced
-        /// </summary>
+
         public static bool ValidPlayerName(Player p, string name) {
-            return ValidPlayerName(p, name, false);
-        }
-        public static bool ValidPlayerName(Player p, string name, bool feedback) {
             string alphabet = Player.USERNAME_ALPHABET + "+"; // compatibility with ClassiCubeAccountPlus
             
             foreach (AuthService service in AuthService.Services)
             {
                 alphabet += service.NameSuffix;
             }
-            return IsValidName(p, name, "player", alphabet, feedback);
+            return IsValidName(p, name, "player", alphabet);
         }
-        /// <summary>
-        /// Binary compatibility with plugins before feedback was introduced
-        /// </summary>
+        
         public static bool IsValidName(Player p, string name, string type, string alphabet) {
-            return IsValidName(p, name, type, alphabet, false);
-        }
-        public static bool IsValidName(Player p, string name, string type, string alphabet, bool feedback) {
             if (name.Length > 0 && name.ContainsAllIn(alphabet)) return true;
-            if (feedback) p.Message("\"{0}\" is not a valid {1} name.", name, type);
+            
+            p.Message("\"{0}\" is not a valid {1} name.", name, type);
             return false;
         }
         
