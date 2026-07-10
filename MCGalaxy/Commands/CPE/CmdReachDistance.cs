@@ -24,6 +24,7 @@ namespace MCGalaxy.Commands.CPE
         public override string shortcut { get { return "Reach"; } }
         public override string type { get { return CommandTypes.Building; } }
         public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
+        public override bool MessageBlockRestricted { get { return true; } }
         public override bool SuperUseable { get { return false; } }
 
         public override void Use(Player p, string message, CommandData data) {
