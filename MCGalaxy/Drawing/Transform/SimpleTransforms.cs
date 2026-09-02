@@ -29,7 +29,7 @@ namespace MCGalaxy.Drawing.Transforms
         
         public override void Perform(Vec3S32[] marks, DrawOp op, Brush brush, DrawOpOutput output) {
             op.Perform(marks, brush, output);
-        }
+        }                                                                                                    
     }
     
     public sealed class ScaleTransform : Transform 

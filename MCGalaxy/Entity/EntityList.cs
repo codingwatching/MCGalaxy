@@ -170,14 +170,11 @@ namespace MCGalaxy {
 
             OnEntitySpawnedEvent.Call(e, ref name, ref skin, ref model, p);
             OnSendingModelEvent.Call(e, ref model, p);
-            VisibleEntity vis;
             byte id;
 
             lock (locker) {
-                if (e == p) {
-                    id = Entities.SelfID;
-                } else if (visible.TryGetValue(e, out vis)) {
-                    id = vis.id;
+                if (LookupEntity(e, out id)) {
+                    // nothing to do
                 } else if (freeIDs.Count > 0) {
                     id = freeIDs.Pop();
                     visible[e] = new VisibleEntity(e, id);
@@ -259,11 +256,11 @@ namespace MCGalaxy {
             OnSendingModelEvent.Call(e, ref model, p);
             
             lock (locker) {
-                VisibleEntity vis;
-                if (!visible.TryGetValue(e, out vis)) return;
+                byte id;
+                if (!LookupEntity(e, out id)) return;
                 
-                p.Session.SendChangeModel(vis.id, model);
-                _SendScales(vis.id, e);
+                p.Session.SendChangeModel(id, model);
+                _SendScales(id, e);
             }
         }
         
@@ -287,35 +284,38 @@ namespace MCGalaxy {
 
         public void SendProp(Entity e, EntityProp prop, int value) {
             if (!p.Supports(CpeExt.EntityProperty)) return;
+            
             lock (locker) {
-                VisibleEntity vis;
-                if (!visible.TryGetValue(e, out vis)) return;
-                p.Session.SendEntityProperty(vis.id, prop, value);
+                byte id;
+                if (!LookupEntity(e, out id)) return;
+                
+                p.Session.SendEntityProperty(id, prop, value);
             }
         }
 
         public bool GetID(Entity e, out byte id) {
-            lock (locker) {
-                VisibleEntity vis;
-                if (visible.TryGetValue(e, out vis)) {
-                    id = vis.id;
-                    return true;
-                }
-            }
-            id = 0;
-            return false;
+        	lock (locker) { return LookupEntity(e, out id); }
+        }
+        
+        bool LookupEntity(Entity e, out byte id) {
+        	if (e == p) { id = Entities.SelfID; return true; }
+        	
+        	VisibleEntity vis;
+        	bool found = visible.TryGetValue(e, out vis);
+        	
+        	id = found ? vis.id : (byte)0;
+        	return found;
         }
 
-        public delegate void EntityAction(Entity e, byte id);
         /// <summary> Performs an action while holding lock on entity list </summary>
-        /// <remarks> Becaus callback is called while holding lock on entity list,
+        /// <remarks> Because callback is called while holding lock on entity list,
         /// it should be a very simple function (e.g. just sending one or two packets) </remarks>
-        public bool PerformAction(Entity e, EntityAction callback) {
+        public bool PerformAction(Entity e, Action<byte> callback) {
             lock (locker) {
-                VisibleEntity vis;
-                if (!visible.TryGetValue(e, out vis)) return false;
+                byte id;
+                if (!LookupEntity(e, out id)) return false;
                 
-                callback(e, vis.id);
+                callback(id);
             }
             return true;
         }

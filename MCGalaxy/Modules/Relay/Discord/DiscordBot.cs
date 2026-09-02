@@ -90,6 +90,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             socket.OnMessageCreate = HandleMessageEvent;
             socket.OnChannelCreate = HandleChannelEvent;
             socket.OnGatewayEvent  = HandleGatewayEvent;
+            
             socket.Connect();
         }
                 
