@@ -80,7 +80,9 @@ namespace MCGalaxy
         public abstract Level Level { get; }
         /// <summary> Whether maximum model scale is limited. </summary>
         public abstract bool RestrictsScale { get; }
-        
+
+        public virtual bool ShouldFlipPitch(Player dst) { return false; }
+
         protected virtual void OnSetPos() { }
         
         protected virtual void OnSetRot() { }
