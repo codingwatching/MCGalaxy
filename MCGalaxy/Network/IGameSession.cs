@@ -131,7 +131,7 @@ namespace MCGalaxy.Network
         /// <summary> Gets the name of the software the client is using </summary>
         /// <example> ClassiCube, Classic 0.0.16, etc </example>
         public abstract string ClientName();
-        public abstract unsafe void GetPositionPacket(ref byte* ptr, byte id, bool srcExtPos, bool extPos,
+        public abstract unsafe byte* GetPositionPacket(byte* ptr, byte id, bool srcExtPos, bool extPos,
                                                             Position pos, Position oldPos, Orientation rot, Orientation oldRot);
 
         /// <summary> Converts the given block ID into a raw block ID that the client supports </summary>

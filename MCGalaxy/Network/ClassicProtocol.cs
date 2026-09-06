@@ -756,7 +756,7 @@ namespace MCGalaxy.Network
             return "Classic 0.28-0.30";
         }
 
-        public override unsafe void GetPositionPacket(ref byte* ptr, byte id, bool srcExtPos, bool extPos,
+        public override unsafe byte* GetPositionPacket(byte* ptr, byte id, bool srcExtPos, bool extPos,
                                                     Position pos, Position oldPos, Orientation rot, Orientation oldRot) {
             Position delta = GetDelta(pos, oldPos, srcExtPos);
             bool posChanged = delta.X != 0 || delta.Y != 0 || delta.Z != 0;
@@ -768,9 +768,13 @@ namespace MCGalaxy.Network
                 *ptr = id; ptr++;
 
                 if (extPos) {
-                    WriteI32(ref ptr, pos.X); WriteI32(ref ptr, pos.Y); WriteI32(ref ptr, pos.Z);
+                    ptr = WriteI32(ptr, pos.X);
+                    ptr = WriteI32(ptr, pos.Y);
+                    ptr = WriteI32(ptr, pos.Z);
                 } else {
-                    WriteI16(ref ptr, (short)pos.X); WriteI16(ref ptr, (short)pos.Y); WriteI16(ref ptr, (short)pos.Z);
+                    ptr = WriteI16(ptr, (short)pos.X);
+                    ptr = WriteI16(ptr, (short)pos.Y);
+                    ptr = WriteI16(ptr, (short)pos.Z);
                 }
             } else if (posChanged) {
                 byte opcode = oriChanged ? Opcode.RelPosAndOrientationUpdate : Opcode.RelPosUpdate;
@@ -789,15 +793,18 @@ namespace MCGalaxy.Network
                 *ptr = rot.RotY; ptr++;
                 *ptr = rot.HeadX; ptr++;
             }
+            return ptr;
         }
 
-        unsafe static void WriteI32(ref byte* ptr, int value) {
+        unsafe static byte* WriteI32(byte* ptr, int value) {
             *ptr = (byte)(value >> 24); ptr++; *ptr = (byte)(value >> 16); ptr++;
-            *ptr = (byte)(value >> 8); ptr++; *ptr = (byte)value; ptr++;
+            *ptr = (byte)(value >>  8); ptr++; *ptr = (byte)value;         ptr++;
+            return ptr;
         }
 
-        unsafe static void WriteI16(ref byte* ptr, short value) {
+        unsafe static byte* WriteI16(byte* ptr, short value) {
             *ptr = (byte)(value >> 8); ptr++; *ptr = (byte)value; ptr++;
+            return ptr;
         }
 
         static Position GetDelta(Position pos, Position old, bool extPositions) {

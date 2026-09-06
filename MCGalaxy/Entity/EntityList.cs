@@ -375,8 +375,8 @@ namespace MCGalaxy {
                     rot.HeadX  = FlippedPitch(pitch);
                 }
 
-                p.Session.GetPositionPacket(ref ptr, id, e.hasExtPositions, dst.hasExtPositions,
-                                            e._positionUpdatePos, e._lastPos, rot, e._lastRot);
+                ptr = p.Session.GetPositionPacket(ptr, id, e.hasExtPositions, dst.hasExtPositions,
+                                                    e._positionUpdatePos, e._lastPos, rot, e._lastRot);
             }
 
             int size = (int)(ptr - src);
